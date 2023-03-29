@@ -1,0 +1,54 @@
+.*{
+	margin: 0 auto;
+	float: left;
+}
+
+body{
+	background-color: rgb(178, 183, 186);
+}
+
+.container{
+	background-color: #d9d9d9;
+}
+
+h1{
+	color: #768E56;
+	float:left;
+	width: 100%;
+}
+.h1tm{
+	font-size: 12px;
+}
+
+#ex1Slider .slider-selection {
+	background: black;
+}
+ 
+#custom-handle {
+    width: 3em;
+    height: 1.6em;
+    top: 50%;
+    margin-top: -.8em;
+    text-align: center;
+    line-height: 1.6em;
+}
+
+.IformBuilder_form, footer{
+	margin: 0 auto;
+	float: none;
+	padding-bottom:20px;
+}
+
+footer{
+	text-align: center;
+}
+
+.error {
+	border-color: #ff3333 !important;
+}
+.correct{
+	border: 1px solid #ccc;
+}
+label span,legend span,.req,#errorAdd{
+	color: #ff3333;
+}
