@@ -3,18 +3,21 @@ include 'config.php';
 include 'acessAPI.php';
 
 $APIObj = new Token();
-
+$errorMessage=null;
 // On Submit of the form..
 if(isset($_POST['submit'])){
-	if (isset($_POST['firstName'])){
+	if (isset($_POST['firstName']) || $_POST['firstName']==""){
 		$FirstName = $_POST['firstName'];
 	}
+
 	if (isset($_POST['lastName'])){
 		$LastName = $_POST['lastName'];
 	}
+
 	if (isset($_POST['email'])){
 		$Email = $_POST['email'];
 	}
+	
 	$Telephone = $_POST['telephone'];
 	$ZipCode = $_POST['zipcode'];
 	$Preference = $_POST['preference'];
@@ -27,14 +30,20 @@ if(isset($_POST['submit'])){
 		$Comment = "";
 	}
 	
-		if(isset($_POST['subscribe'])){
-			$Subscribe = 1;
-		}else{
-			$Subscribe = 0;
-		}
-	
-	$APIObj->AddFormDetails($FirstName,$LastName,$Email,$Telephone,$ZipCode,$Preference,$Gender,$Skills,$Date,$Comment,$Subscribe);
-	$_POST['success']="Submit";
+	if(isset($_POST['subscribe'])){
+		$Subscribe = 1;
+	}else{
+		$Subscribe = 0;
+	}
+	$response=$APIObj->AddFormDetails($FirstName,$LastName,$Email,$Telephone,$ZipCode,$Preference,$Gender,$Skills,$Date,$Comment,$Subscribe);
+
+	if(!isset($response["error"])){
+		$_POST['success']="Submit";
+	}
+	else{
+		$_POST['success']="not_Submit";
+		$errorMessage=$response["error"];
+	}
 	
 }
 ?>
@@ -91,29 +100,29 @@ if(isset($_POST['submit'])){
 					<div class="col-md-5 IformBuilder_form">
 					<p id="errorAdd" class="row"></p>
 						<?php if(!isset($_POST['success'])){?>
-						<form method="post" action="index.php">
+						<form  method="post" action="index.php" >
 							<div class="form-group row">
 								<label for="formGroupFirstNameInput">First Name<span>*</span></label>
-								<input type="text" name="firstName" class="form-control" id="formGroupFirstNameInput" placeholder="First Name">
+								<input required type="text" name="firstName" class="form-control" id="formGroupFirstNameInput" placeholder="First Name">
 							</div>
 							<div class="form-group row">
 								<label for="formGroupLastNameInput">Last name<span>*</span></label>
-								<input type="text" name="lastName" class="form-control" id="formGroupLastNameInput" placeholder="Last Name">
+								<input required type="text" name="lastName" class="form-control" id="formGroupLastNameInput" placeholder="Last Name">
 							</div>
 							<div class="form-group row">
 								<label for="inputEmail3">Email<span>*</span></label>
-								<input type="email" name="email" class="form-control" id="inputEmail3" placeholder="Email">
+								<input required type="email" name="email" class="form-control" id="inputEmail3" placeholder="Email">
 							</div>
 							<div class="form-group row">
 							  <label for="tel-input" class="col-2 col-form-label">Telephone<span>*</span></label>
 							  <div class="col-10">
-								<input class="form-control" name="telephone" type="tel" value="" id="tel-input" placeholder="(555) 555-5555" >
+								<input required class="form-control" name="telephone" type="tel" value="" id="tel-input" placeholder="(555) 555-5555" >
 							  </div>
 							</div>
 							<div class="form-group row">
 							  <label for="zip-input" class="col-2 col-form-label">ZipCode<span>*</span></label>
 							  <div class="col-10">
-								<input class="form-control" name="zipcode" type="number_format" value="" id="zip-input" placeholder="Zip">
+								<input required class="form-control" name="zipcode" type="number_format" value="" id="zip-input" placeholder="Only 5 charecters number acceptable">
 							  </div>
 							</div>
 							
@@ -136,13 +145,13 @@ if(isset($_POST['submit'])){
 							  <div class="col-sm-10">
 								<div class="form-check">
 								  <label class="form-check-label">
-									<input class="form-check-input" type="radio" name="gridRadios" id="gridRadios1" value="male" >
+									<input required class="form-check-input" type="radio" name="gridRadios" id="gridRadios1" value="male" >
 									Male
 								  </label>
 								</div>
 								<div class="form-check">
 								  <label class="form-check-label">
-									<input class="form-check-input" type="radio" name="gridRadios" id="gridRadios2" value="female">
+									<input required class="form-check-input" type="radio" name="gridRadios" id="gridRadios2" value="female">
 									Female
 								  </label>
 								</div>
@@ -151,12 +160,12 @@ if(isset($_POST['submit'])){
 							 <label class="form-check-label"> <p>Rate Experience</p> </label>
 							<div class="form-group" id="slider">
 								  <div id="custom-handle" class="ui-slider-handle"></div>
-								  <input type="hidden" id="rate" name="rate" value="2"/>
+								  <input required type="hidden" id="rate" name="rate" value="2"/>
 							</div>
-							 
+							 <input name="hiddenValue" type="hidden" id="hiddenValue" value="mainError">
 							<div class="form-group row"> <!-- Date input -->
 								<label class="control-label" for="date">Date<span>*</span></label>
-								<input class="form-control" id="date" name="date" placeholder="MM/DD/YYY" type="text"/>
+								<input required class="form-control" id="date" name="date" placeholder="MM/DD/YYY" type="text"/>
 							 </div>
 							
 							<div class="form-group row">
@@ -164,14 +173,18 @@ if(isset($_POST['submit'])){
 								<textarea class="form-control" name="comment" id="commentTextarea" rows="3"></textarea>
 							</div>
 							<div class="form-group"><b>Subscription</b>
-								<input checked data-toggle="toggle" name="subscribe" type="checkbox" value="" />
+								<input required checked data-toggle="toggle" name="subscribe" type="checkbox" value="" />
 							</div>
 							<p><span class="req">*</span> Required fields</p>
-							<button type="submit" id="submit" name="submit" class="btn btn-primary" onclick="return  submitForm()">Submit</button>
+							<button type="submit" id="submit" name="submit" class="btn btn-primary"  >Submit</button>
 							
-						</form><?php }else{ ?>
+						</form><?php }else if($_POST['success']=="Submit"){ ?>
 						<h2 class="success">Sucessfully submitted the data <a href="index.php">Back</a></h2>
-						<?php } ?>
+						<?php }else{ ?>
+						<h2 class="success">The data was not submitted. Error was <br><p style="color: red"><?php echo $errorMessage ?></p></h2>
+						<a href="index.php">Back</a>
+						<?php }
+						 ?>
 					</div>
 				</div>
 			

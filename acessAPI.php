@@ -152,7 +152,12 @@ Class Token{
 
 			$response = curl_exec($ch1);
 			curl_close($ch1);
-			var_dump($response);
+			$response=json_decode($response,true);
+			if(isset($response[0]["error_message"])){
+				// echo '<p style="color: red">'.$response[0]["error_message"].'</p>';
+				return array("error" => $response[0]["error_message"]);
+			}
+			return true;
 				
 	}
 	
